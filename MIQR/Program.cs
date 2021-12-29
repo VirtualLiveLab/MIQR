@@ -18,7 +18,7 @@ namespace MIQR
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // splash
+            // display splash
             FormSplash formSplash = new FormSplash();
             formSplash.Show();
             formSplash.Refresh();
