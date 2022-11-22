@@ -109,12 +109,12 @@ namespace MIQR
             return true;
         }
 
-        [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
+        // [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
         private string ScanQr(ref Bitmap bitmap)
         {
              _result = _barcodeReader.Decode(bitmap);
-             GC.Collect();
-             GC.WaitForFullGCComplete();
+             // GC.Collect();
+             // GC.WaitForFullGCComplete();
              if (_result != null)
              {
                  return _result.Text;
@@ -129,7 +129,7 @@ namespace MIQR
             while (backgroundWorker1.IsBusy) Application.DoEvents();
         }
 
-        [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
+        // [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (!CanRead) return;
@@ -137,27 +137,27 @@ namespace MIQR
             tmpImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
             
             // 色反転
-            Graphics g = Graphics.FromImage(tmpImage);
-            System.Drawing.Imaging.ColorMatrix cm =
-                new System.Drawing.Imaging.ColorMatrix()
-                {
-                    Matrix00 = -1,
-                    Matrix11 = -1,
-                    Matrix22 = -1,
-                    Matrix33 = 1,
-                    Matrix40 = 1,
-                    Matrix41 = 1,
-                    Matrix42 = 1,
-                    Matrix44 = 1
-                };
-            System.Drawing.Imaging.ImageAttributes ia =
-                new System.Drawing.Imaging.ImageAttributes();
-            ia.SetColorMatrix(cm);
-            g.DrawImage(tmpImage,
-                new Rectangle(0, 0, tmpImage.Width, tmpImage.Height),
-                0, 0, tmpImage.Width, tmpImage.Height, GraphicsUnit.Pixel, ia);
-            g.Dispose();
-            _graphics.DrawImage(tmpImage, 0, 0, _frame.Cols, _frame.Rows);
+            // Graphics g = Graphics.FromImage(tmpImage);
+            // System.Drawing.Imaging.ColorMatrix cm =
+            //     new System.Drawing.Imaging.ColorMatrix()
+            //     {
+            //         Matrix00 = -1,
+            //         Matrix11 = -1,
+            //         Matrix22 = -1,
+            //         Matrix33 = 1,
+            //         Matrix40 = 1,
+            //         Matrix41 = 1,
+            //         Matrix42 = 1,
+            //         Matrix44 = 1
+            //     };
+            // System.Drawing.Imaging.ImageAttributes ia =
+            //     new System.Drawing.Imaging.ImageAttributes();
+            // ia.SetColorMatrix(cm);
+            // g.DrawImage(tmpImage,
+            //     new Rectangle(0, 0, tmpImage.Width, tmpImage.Height),
+            //     0, 0, tmpImage.Width, tmpImage.Height, GraphicsUnit.Pixel, ia);
+            // g.Dispose();
+            // _graphics.DrawImage(tmpImage, 0, 0, _frame.Cols, _frame.Rows);
             
             _qrDecoded = ScanQr(ref tmpImage);
             if (_qrDecoded != null)
@@ -358,10 +358,10 @@ namespace MIQR
             captureStart_Button.Enabled = true;
             captureStop_Button.Enabled = false;
             AddLog("Capture Stop");
-            AddLog("Please restart this software");
-            _videoCapture.Dispose();
-            backgroundWorker1.CancelAsync();
-            backgroundWorker1.Dispose();
+            // AddLog("Please restart this software");
+            backgroundWorker1.CancelAsync();    // backgroundWorker1がカメラオブジェクト(?)を触っているので、
+            _videoCapture.Dispose();            // ここの順番変えると、bg1内のループにてnull(抹殺後のカメラオブジェクト)を参照することになるので注意
+            // backgroundWorker1.Dispose();     // このメソッドは何もしないらしい
         }
     }
 }
