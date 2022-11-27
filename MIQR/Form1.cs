@@ -360,6 +360,7 @@ namespace MIQR
             AddLog("Capture Stop");
             // AddLog("Please restart this software");
             backgroundWorker1.CancelAsync();    // backgroundWorker1がカメラオブジェクト(?)を触っているので、
+            Thread.Sleep(1000)  // アホ
             _videoCapture.Dispose();            // ここの順番変えると、bg1内のループにてnull(抹殺後のカメラオブジェクト)を参照することになるので注意
             // backgroundWorker1.Dispose();     // このメソッドは何もしないらしい
         }
