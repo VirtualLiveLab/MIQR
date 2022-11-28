@@ -27,7 +27,8 @@ namespace MIQR
         private BarcodeReader _barcodeReader;
         private Result _result;
         private string _tmpManualReserveNumber;
-        private static string[] liveList = { "12/11 Night", "12/12 Noon", "12/12 Night", "TEST" };
+        // private static string[] liveList = { "12/11 Night", "12/12 Noon", "12/12 Night", "TEST" };
+        private static string[] liveList = { "1", "2", "3", "9" };      // 公演順の数字、9はデバッグ用
 
         public bool CanRead = true;
 
@@ -36,11 +37,11 @@ namespace MIQR
             InitializeComponent();
             consoleDisplay_TextBox.Clear();
             this.FormBorderStyle = FormBorderStyle.None;
-            this.WindowState = FormWindowState.Maximized;
+            // this.WindowState = FormWindowState.Maximized;
             
             AddLog("Initializing...");
 
-            bool result = GoogleApiConnection.ReadGoogle("TEST");
+            bool result = GoogleApiConnection.ReadGoogle("9");
             if (result)
             {
                 AddLog("Google API Connected");
@@ -58,27 +59,30 @@ namespace MIQR
             comboBox_Day.Items.AddRange(liveList);
             comboBox_Day.SelectedIndex = 3;
 
-            System.Drawing.Text.PrivateFontCollection pfc =
-                new System.Drawing.Text.PrivateFontCollection();
-            pfc.AddFontFile(@"./OCRA-Alternate.otf");
-            pfc.AddFontFile(@"./Orbitron-Regular.ttf");
-            pfc.AddFontFile(@"./Ronde-B_square.otf");
-            pfc.AddFontFile(@"./meiryob.ttc");
+
+            // fonts
+
+            //System.Drawing.Text.PrivateFontCollection pfc =
+            //    new System.Drawing.Text.PrivateFontCollection();
+            //pfc.AddFontFile(@"./OCRA-Alternate.otf");
+            //pfc.AddFontFile(@"./Orbitron-Regular.ttf");
+            //pfc.AddFontFile(@"./Ronde-B_square.otf");
+            //pfc.AddFontFile(@"./meiryob.ttc");
             // foreach (var VARIABLE in pfc.Families)
             // {
             //     AddLog(VARIABLE.Name);
             // }
-            Font f1 = new Font(pfc.Families[1], 48);
-            reserveNumberDisplay_Label.Font = f1;
-            label1.Font = new Font(pfc.Families[2], 80);
-            label2.Font = new Font(pfc.Families[2], 14);
-            label3.Font = new Font(pfc.Families[2], 14);
-            label8.Font = new Font(pfc.Families[2], 14);
-            label4.Font = new Font(pfc.Families[4], 24);
-            label9.Font = new Font(pfc.Families[4], 12);
-            label10.Font = new Font(pfc.Families[4], 12);
-            status_Label.Font = new Font(pfc.Families[2], 72);
-            grantStatus_Label.Font = new Font(pfc.Families[0], 95, FontStyle.Bold);
+            //Font f1 = new Font(pfc.Families[1], 48);
+            //reserveNumberDisplay_Label.Font = f1;
+            //label1.Font = new Font(pfc.Families[2], 80);
+            //label2.Font = new Font(pfc.Families[2], 14);
+            //label3.Font = new Font(pfc.Families[2], 14);
+            //label8.Font = new Font(pfc.Families[2], 14);
+            //label4.Font = new Font(pfc.Families[4], 24);
+            //label9.Font = new Font(pfc.Families[4], 12);
+            //label10.Font = new Font(pfc.Families[4], 12);
+            //status_Label.Font = new Font(pfc.Families[2], 72);
+            //grantStatus_Label.Font = new Font(pfc.Families[0], 95, FontStyle.Bold);
             
             AddLog("Initialize completed");
         }
@@ -252,16 +256,20 @@ namespace MIQR
             switch (comboBox_Day.SelectedIndex)
             {
                 case 0:
-                    type = "1211NGH";
+                    //type = "1211NGH";
+                    type = "1";
                     break;
                 case 1:
-                    type = "1212NOO";
+                    //type = "1212NOO";
+                    type = "2";
                     break;
                 case 2:
-                    type = "1212NGH";
+                    //type = "1212NGH";
+                    type = "3";
                     break;
                 case 3:
-                    type = "TEST";
+                    //type = "TEST";
+                    type = "9";
                     break;
             }
 
@@ -360,9 +368,10 @@ namespace MIQR
             AddLog("Capture Stop");
             // AddLog("Please restart this software");
             backgroundWorker1.CancelAsync();    // backgroundWorker1がカメラオブジェクト(?)を触っているので、
-            Thread.Sleep(1000)  // アホ
+            Thread.Sleep(1000);  // アホ
             _videoCapture.Dispose();            // ここの順番変えると、bg1内のループにてnull(抹殺後のカメラオブジェクト)を参照することになるので注意
             // backgroundWorker1.Dispose();     // このメソッドは何もしないらしい
         }
+
     }
 }

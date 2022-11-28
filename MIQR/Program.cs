@@ -24,7 +24,7 @@ namespace MIQR
             formSplash.Refresh();
             Thread.Sleep(3000);
             formSplash.Close();
-            
+
             Application.Run(new Form1());
         }
     }
