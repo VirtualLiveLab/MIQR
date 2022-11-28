@@ -17,7 +17,11 @@ namespace MIQR
 {
     public class QrProcedure
     {
+        // old
         public int ReserveNumber { get; }
+
+        // new (for 2022)
+        public int PerformanceNum { get; }
         public string Uuid { get; }
         
         public bool CollectId { get; }
@@ -27,7 +31,8 @@ namespace MIQR
             try
             {
                 string[] value = decodedValue.Split('_');
-                ReserveNumber = int.Parse(value[0]);
+                //ReserveNumber = int.Parse(value[0]);
+                PerformanceNum = int.Parse(value[0]);
                 Uuid = value[1];
                 CollectId = true;
             }
@@ -37,20 +42,8 @@ namespace MIQR
             }
         }
 
-        public bool CollateUuid()
-        {
-            int resultIndex = GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == ReserveNumber.ToString("0000"));
-            if (resultIndex != -1)
-            {
-                if (GoogleApiConnection.Data[resultIndex].Uuid == Uuid)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public string SearchGoogle(string reserveNumber)
+        // public string SearchGoogle(string reserveNumber)
+        public string SearchGoogle(string )
         {
             int resultIndex = GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == reserveNumber);
             if (resultIndex != -1)
@@ -60,6 +53,24 @@ namespace MIQR
 
             return "Not Found";
         }
+
+
         
+        //これ多分使わない
+
+        //public bool CollateUuid()
+        //{
+        //    int resultIndex = GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == ReserveNumber.ToString("0000"));
+        //    if (resultIndex != -1)
+        //    {
+        //        if (GoogleApiConnection.Data[resultIndex].Uuid == Uuid)
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
+
+
     }
 }

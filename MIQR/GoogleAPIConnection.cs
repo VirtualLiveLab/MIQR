@@ -22,9 +22,17 @@ namespace MIQR
 
         private static string[] _scopes = {SheetsService.Scope.Spreadsheets};
         private static string _applicationName = "MIQR";
-        private static string _spreadSheetId = ""; // for real
 
-        public static bool ReadGoogle(string liveList = "TEST")
+
+        // 取り扱い注意
+        private static string _spreadSheetId = "129cjs7Rl_P1rWEHNxaYiEnHqxNuaTXz-1ypvnqYUU4Q"; // for real
+
+        /// <summary>
+        /// google スプレッドシートから全情報をfetchする
+        /// </summary>
+        /// <param name="liveList"></param>
+        /// <returns></returns>
+        public static bool ReadGoogle(string liveList = "9")
         {
             try
             {
@@ -42,12 +50,12 @@ namespace MIQR
                     ApplicationName = _applicationName
                 });
 
-                SpreadsheetsResource.ValuesResource.GetRequest request = service.Spreadsheets.Values.Get(_spreadSheetId, liveList + "!A:E");
+                SpreadsheetsResource.ValuesResource.GetRequest request = service.Spreadsheets.Values.Get(_spreadSheetId, liveList + "!A:F");
 
                 ValueRange response = request.Execute();
                 IList<IList<Object>> values = response.Values;
                 StringBuilder sb = new StringBuilder();
-                Data.Clear();
+                Data.Clear();   // これが顧客リストっぽい
                 if (values != null && values.Count > 0)  
                 {
                     foreach (var row in values)
@@ -56,10 +64,13 @@ namespace MIQR
                         {
                             UserInformation userInformation = new UserInformation()
                             {
-                                SeatNumber = row[2] != null ? row[2].ToString() : "NULL",
-                                ReserveNumber = row[0] != null ? row[0].ToString() : "-1",
-                                Uuid = row[1] != null ? row[1].ToString() : "NULL",
-                                CheckedIn = row[3] != null ? row[3].ToString() : "FALSE",
+                                // 構造体の初期化っぽい
+
+                                //SeatNumber = row[2] != null ? row[2].ToString() : "NULL",
+                                //ReserveNumber = row[0] != null ? row[0].ToString() : "-1",
+                                Uuid = row[3] != null ? row[3].ToString() : "NULL",
+                                CheckedIn = row[5] != null ? row[5].ToString() : "FALSE",
+                                Name = row[0] != null ? row[0].ToString() : "No name",
                             };
                             Data.Add(userInformation);
                         }
@@ -67,10 +78,11 @@ namespace MIQR
                         {
                             UserInformation userInformation = new UserInformation()
                             {
-                                SeatNumber = "NULL",
-                                ReserveNumber = "-1",
+                                // SeatNumber = "NULL",
+                                // ReserveNumber = "-1",
                                 Uuid = "NULL",
                                 CheckedIn = "FALSE",
+                                Name = "No Name",
                             };
                             Data.Add(userInformation);
                         }
@@ -82,8 +94,12 @@ namespace MIQR
                 return false;
             }
 
+            // Dataの先頭が表の一番上、項目を持っちゃってるのでリストの先頭を削除
+            Data.RemoveAt(0);
+
             return true;
         }
+
 
         public static bool WriteGoogle(bool trigger, int reserveNumber, string liveList = "TEST")
         {
@@ -124,12 +140,14 @@ namespace MIQR
         }
     }
 
+
     public struct UserInformation
     {
-        public string SeatNumber;
-        public string ReserveNumber;
+        // public string SeatNumber;
+        // public string ReserveNumber;
         public string Uuid;
         public string CheckedIn;
+        public string Name;
     }
     
 }
