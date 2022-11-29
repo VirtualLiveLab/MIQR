@@ -13,17 +13,21 @@ using System.Windows.Forms;
 using OpenCvSharp;
 using ZXing;
 
+/// <summary>
+/// 各個人に対してこのクラス作ってる、気がする
+/// </summary>
 namespace MIQR
 {
     public class QrProcedure
     {
         // old
-        public int ReserveNumber { get; }
+        // public int ReserveNumber { get; }
 
         // new (for 2022)
         public int PerformanceNum { get; }
+        public string Name { get; }
         public string Uuid { get; }
-        
+
         public bool CollectId { get; }
 
         public QrProcedure(string decodedValue)
@@ -43,9 +47,9 @@ namespace MIQR
         }
 
         // public string SearchGoogle(string reserveNumber)
-        public string SearchGoogle(string )
+        public string SearchGoogle(string uuid)
         {
-            int resultIndex = GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == reserveNumber);
+            int resultIndex = GoogleApiConnection.Data.FindIndex(n => n.Uuid == uuid);
             if (resultIndex != -1)
             {
                 return GoogleApiConnection.Data[resultIndex].Uuid;
@@ -58,18 +62,32 @@ namespace MIQR
         
         //これ多分使わない
 
-        //public bool CollateUuid()
-        //{
-        //    int resultIndex = GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == ReserveNumber.ToString("0000"));
-        //    if (resultIndex != -1)
-        //    {
-        //        if (GoogleApiConnection.Data[resultIndex].Uuid == Uuid)
-        //        {
-        //            return true;
-        //        }
-        //    }
-        //    return false;
-        //}
+        public bool CollateUuid()
+        {
+            // "0000"は文字列のフォーマット指定用
+            // int resultIndex = GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == ReserveNumber.ToString("0000"));
+            int resultIndex = GoogleApiConnection.Data.FindIndex(n => n.Uuid == this.Uuid);
+
+            if (resultIndex != -1)  // 予約があったら
+            {
+                return true;
+                //if (GoogleApiConnection.Data[resultIndex].Uuid == this.Uuid)
+                //{
+                //    return true;
+                //}
+            }
+            return false;
+        }
+
+
+
+
+
+        // キャンセルのこと気にしてないのちょっとやばいかも
+        // DBにはキャンセルした人も含まれる
+
+
+
 
 
     }

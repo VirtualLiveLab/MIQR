@@ -62,7 +62,7 @@
             this.label1.Location = new System.Drawing.Point(-9, -6);
             this.label1.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(522, 174);
+            this.label1.Size = new System.Drawing.Size(533, 174);
             this.label1.TabIndex = 0;
             this.label1.Text = "MIQR";
             // 
@@ -133,12 +133,12 @@
             // 
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(1848, 461);
+            this.label4.Location = new System.Drawing.Point(1618, 461);
             this.label4.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(353, 94);
+            this.label4.Size = new System.Drawing.Size(583, 94);
             this.label4.TabIndex = 6;
-            this.label4.Text = "席番号:";
+            this.label4.Text = "席番号(消したい):";
             // 
             // reserveNumberDisplay_Label
             // 
