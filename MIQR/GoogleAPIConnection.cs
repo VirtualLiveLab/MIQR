@@ -68,10 +68,15 @@ namespace MIQR
 
                                 //SeatNumber = row[2] != null ? row[2].ToString() : "NULL",
                                 //ReserveNumber = row[0] != null ? row[0].ToString() : "-1",
+                                Name = row[0] != null ? row[0].ToString() : "No name",
                                 Uuid = row[3] != null ? row[3].ToString() : "NULL",
                                 CheckedIn = row[5] != null ? row[5].ToString() : "FALSE",
-                                Name = row[0] != null ? row[0].ToString() : "No name",
                             };
+
+                            // debug
+                            //MessageBox.Show($"{userInformation.Name}", $"来る人", MessageBoxButtons.OK);
+                            // debug end
+
                             Data.Add(userInformation);
                         }
                         else
@@ -80,9 +85,9 @@ namespace MIQR
                             {
                                 // SeatNumber = "NULL",
                                 // ReserveNumber = "-1",
+                                Name = "No Name",
                                 Uuid = "NULL",
                                 CheckedIn = "FALSE",
-                                Name = "No Name",
                             };
                             Data.Add(userInformation);
                         }
@@ -101,11 +106,19 @@ namespace MIQR
         }
 
 
-        public static bool WriteGoogle(bool trigger, int reserveNumber, string liveList = "TEST")
+        public static bool WriteGoogle(bool trigger, string uuid, string liveList = "9")
         {
             // 検索ここ入れる / splashの次に設定画面 / 席一覧はウィンドウ追加 / backgroundWorkerを自動生成に切り替え / フォントの埋め込み
-            int index = Data.FindIndex(n => int.Parse(n.ReserveNumber) == reserveNumber);
-            if (Data[index].CheckedIn == "TRUE") return false;
+
+            // 検索(uuidで検索、その人がすでにチェックインしてたら）
+            // int index = Data.FindIndex(n => int.Parse(n.ReserveNumber) == reserveNumber);
+            int index = Data.FindIndex(n => n.Uuid == uuid);
+
+            if (Data[index].CheckedIn == "TRUE")
+            {
+                return false;
+            }
+            // Data[index].CheckedIn == "FALSE" || null すなわち受付されてなかったら
             try
             {
                 UserCredential userCredential;
@@ -121,14 +134,22 @@ namespace MIQR
                     HttpClientInitializer = userCredential, 
                     ApplicationName = _applicationName
                 });
+
+                // 書き込むデータを一旦リストの形にしてるのかな？
                 var wv = new List<IList<object>>()
                 {
-                    new List<object> { trigger.ToString() }
+                    new List<object> { trigger.ToString() } // これが書き込む内容か、セルを"TRUE"にするってことか
                 };
-                var body = new ValueRange() { Values = wv};
-                SpreadsheetsResource.ValuesResource.UpdateRequest request = service.Spreadsheets.Values.Update(body, _spreadSheetId, liveList + $"!D{index + 1}");
+                var body = new ValueRange() { Values = wv };
+
+                // 多分この辺で実際に書き換えてる
+                SpreadsheetsResource.ValuesResource.UpdateRequest request =
+                        // service.Spreadsheets.Values.Update(body, _spreadSheetId, liveList + $"!D{index + 1}");
+                        service.Spreadsheets.Values.Update(body, _spreadSheetId, liveList + $"!F{index + 2}");  // 2022年はFのカラムが「受付済み」を表す
+                        // 文字列前の $ マークは、文字列に変数をぶち込むための物、indexの + 1 ってのは、0 始まりか1始まりかの対策かと
+                        // +1 でなく +2なのは、カラムの名前の列を考慮するとそうなる
                 request.ValueInputOption =
-                    SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
+                        SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
                 var response = request.Execute();
             }
             catch (Exception e)
@@ -145,9 +166,9 @@ namespace MIQR
     {
         // public string SeatNumber;
         // public string ReserveNumber;
+        public string Name;
         public string Uuid;
         public string CheckedIn;
-        public string Name;
     }
     
 }

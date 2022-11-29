@@ -36,8 +36,10 @@ namespace MIQR
         {
             InitializeComponent();
             consoleDisplay_TextBox.Clear();
-            this.FormBorderStyle = FormBorderStyle.None;
-            // this.WindowState = FormWindowState.Maximized;
+
+            // 全画面系のやつ
+            //this.FormBorderStyle = FormBorderStyle.None;
+            this.WindowState = FormWindowState.Maximized;
             
             AddLog("Initializing...");
 
@@ -161,7 +163,7 @@ namespace MIQR
             //     new Rectangle(0, 0, tmpImage.Width, tmpImage.Height),
             //     0, 0, tmpImage.Width, tmpImage.Height, GraphicsUnit.Pixel, ia);
             // g.Dispose();
-            // _graphics.DrawImage(tmpImage, 0, 0, _frame.Cols, _frame.Rows);
+            _graphics.DrawImage(tmpImage, 0, 0, _frame.Cols, _frame.Rows);
             
             _qrDecoded = ScanQr(ref tmpImage);
             if (_qrDecoded != null)
@@ -174,7 +176,7 @@ namespace MIQR
                 
                 // QR detected --------------------------------------
                 GoogleApiConnection.ReadGoogle(liveListType());
-                
+
                 //ユーザー専用のQRインスタンスの作成
                 QrProcedure qrProcedure = new QrProcedure(_qrDecoded);
                 
@@ -192,11 +194,12 @@ namespace MIQR
                 bool isMatched = qrProcedure.CollateUuid();
                 if (isMatched)
                 {
-                    AddLog($"{qrProcedure.ReserveNumber} is matched");
+                    // AddLog($"{qrProcedure.ReserveNumber} is matched");
+                    AddLog($"{qrProcedure.Name} is matched");
                     status_Label.Text = @"VALID";
                     status_Label.ForeColor = Color.FromArgb(46, 245, 153);
                     var a = GoogleApiConnection.Data;
-                    bool checkedIn = GoogleApiConnection.WriteGoogle(true, qrProcedure.ReserveNumber, liveListType());
+                    bool checkedIn = GoogleApiConnection.WriteGoogle(true, qrProcedure.Uuid, liveListType());
                     if (checkedIn)
                     {
                         grantStatus_Label.Text = @"受付完了";
@@ -210,9 +213,10 @@ namespace MIQR
                         nextScan_Button.Focus();
                     }
 
-                    int reserveNumber =
-                        GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == qrProcedure.ReserveNumber.ToString("0000"));
-                    reserveNumberDisplay_Label.Text = GoogleApiConnection.Data[reserveNumber].SeatNumber.ToString();
+                    // ここで「○○様、いらっしゃいませ！」をやる
+                    //int reserveNumber =
+                    //    GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == qrProcedure.ReserveNumber.ToString("0000"));
+                    //reserveNumberDisplay_Label.Text = GoogleApiConnection.Data[reserveNumber].SeatNumber.ToString();
                 }
                 else
                 {
@@ -316,6 +320,7 @@ namespace MIQR
             status_Label.ForeColor = Color.FromArgb(165, 56, 255);
             AddLog("Manual searching...");
             
+            // 修正予定、認証編
             QrProcedure qrProcedure = new QrProcedure($"{int.Parse(reserveNumber_TextBox.Text).ToString("0000")}_0");
             string resultUuid = qrProcedure.SearchGoogle(int.Parse(reserveNumber_TextBox.Text).ToString("0000"));
             nextScan_Button.Enabled = true;
@@ -334,25 +339,26 @@ namespace MIQR
 
         private void checkIn_Button_Click(object sender, EventArgs e)
         {
-            GoogleApiConnection.ReadGoogle(liveListType());
-            bool checkedIn = GoogleApiConnection.WriteGoogle(true, int.Parse(_tmpManualReserveNumber), liveListType());
-            if (checkedIn)
-            {
-                grantStatus_Label.Text = @"受付完了";
-                grantStatus_Label.ForeColor = Color.Cyan;
-                nextScan_Button.Focus();
-            }
-            else
-            {
-                grantStatus_Label.Text = @"受付済み";
-                grantStatus_Label.ForeColor = Color.FromArgb(255, 123, 85);
-                nextScan_Button.Focus();
-            }
+            // 修正予定、認証編
+            //GoogleApiConnection.ReadGoogle(liveListType());
+            //bool checkedIn = GoogleApiConnection.WriteGoogle(true, int.Parse(_tmpManualReserveNumber), liveListType());
+            //if (checkedIn)
+            //{
+            //    grantStatus_Label.Text = @"受付完了";
+            //    grantStatus_Label.ForeColor = Color.Cyan;
+            //    nextScan_Button.Focus();
+            //}
+            //else
+            //{
+            //    grantStatus_Label.Text = @"受付済み";
+            //    grantStatus_Label.ForeColor = Color.FromArgb(255, 123, 85);
+            //    nextScan_Button.Focus();
+            //}
 
-            int reserveNumber =
-                GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == _tmpManualReserveNumber.ToString());
-            reserveNumberDisplay_Label.Text = GoogleApiConnection.Data[reserveNumber].SeatNumber.ToString();
-            checkIn_Button.Enabled = false;
+            //int reserveNumber =
+            //    GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == _tmpManualReserveNumber.ToString());
+            //reserveNumberDisplay_Label.Text = GoogleApiConnection.Data[reserveNumber].SeatNumber.ToString();
+            //checkIn_Button.Enabled = false;
         }
 
         private void captureStop_Button_Click(object sender, EventArgs e)
