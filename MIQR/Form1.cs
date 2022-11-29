@@ -26,7 +26,7 @@ namespace MIQR
         private string _qrDecoded;
         private BarcodeReader _barcodeReader;
         private Result _result;
-        private string _tmpManualReserveNumber;
+        private string _tmpManualUuid;
         // private static string[] liveList = { "12/11 Night", "12/12 Noon", "12/12 Night", "TEST" };
         private static string[] liveList = { "1", "2", "3", "9" };      // 公演順の数字、9はデバッグ用
 
@@ -319,10 +319,15 @@ namespace MIQR
             status_Label.Text = @"MANUAL";
             status_Label.ForeColor = Color.FromArgb(165, 56, 255);
             AddLog("Manual searching...");
-            
+
             // 修正予定、認証編
-            QrProcedure qrProcedure = new QrProcedure($"{int.Parse(reserveNumber_TextBox.Text).ToString("0000")}_0");
-            string resultUuid = qrProcedure.SearchGoogle(int.Parse(reserveNumber_TextBox.Text).ToString("0000"));
+            // QrProcedure qrProcedure = new QrProcedure($"{int.Parse(reserveNumber_TextBox.Text).ToString("0000")}_0");
+            
+            // 手動入力は (公演番号)_(uuid)
+
+            QrProcedure qrProcedure = new QrProcedure(reserveNumber_TextBox.Text);
+            // string resultUuid = qrProcedure.SearchGoogle(int.Parse(reserveNumber_TextBox.Text).ToString("0000"));
+            string resultUuid = qrProcedure.SearchGoogle(qrProcedure.Uuid);
             nextScan_Button.Enabled = true;
             if (resultUuid == "Not Found")
             {
@@ -333,32 +338,37 @@ namespace MIQR
             }
             
             checkIn_Button.Enabled = true;
-            _tmpManualReserveNumber = int.Parse(reserveNumber_TextBox.Text).ToString("0000");
+            // _tmpManualReserveNumber = int.Parse(reserveNumber_TextBox.Text).ToString("0000");
+            _tmpManualUuid = qrProcedure.Uuid;
             uuid_TextBox.Text = resultUuid;
         }
 
         private void checkIn_Button_Click(object sender, EventArgs e)
         {
             // 修正予定、認証編
-            //GoogleApiConnection.ReadGoogle(liveListType());
-            //bool checkedIn = GoogleApiConnection.WriteGoogle(true, int.Parse(_tmpManualReserveNumber), liveListType());
-            //if (checkedIn)
-            //{
-            //    grantStatus_Label.Text = @"受付完了";
-            //    grantStatus_Label.ForeColor = Color.Cyan;
-            //    nextScan_Button.Focus();
-            //}
-            //else
-            //{
-            //    grantStatus_Label.Text = @"受付済み";
-            //    grantStatus_Label.ForeColor = Color.FromArgb(255, 123, 85);
-            //    nextScan_Button.Focus();
-            //}
+            GoogleApiConnection.ReadGoogle(liveListType());
+            // bool checkedIn = GoogleApiConnection.WriteGoogle(true, int.Parse(_tmpManualReserveNumber), liveListType());
+            bool checkedIn = GoogleApiConnection.WriteGoogle(true, _tmpManualUuid, liveListType());
+            if (checkedIn)
+            {
+                grantStatus_Label.Text = @"受付完了";
+                grantStatus_Label.ForeColor = Color.Cyan;
+                nextScan_Button.Focus();
+            }
+            else
+            {
+                grantStatus_Label.Text = @"受付済み";
+                grantStatus_Label.ForeColor = Color.FromArgb(255, 123, 85);
+                nextScan_Button.Focus();
+            }
 
+            // 表示系
+            // int reserveNumber =
+            //         GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == _tmpManualReserveNumber.ToString());
             //int reserveNumber =
-            //    GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == _tmpManualReserveNumber.ToString());
+            //        GoogleApiConnection.Data.FindIndex(n => n.ReserveNumber == _tmpManualReserveNumber.ToString());
             //reserveNumberDisplay_Label.Text = GoogleApiConnection.Data[reserveNumber].SeatNumber.ToString();
-            //checkIn_Button.Enabled = false;
+            checkIn_Button.Enabled = false;
         }
 
         private void captureStop_Button_Click(object sender, EventArgs e)
